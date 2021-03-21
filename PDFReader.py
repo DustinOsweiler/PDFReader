@@ -14,8 +14,13 @@ app.mainloop()
 if app.all_input_selected == True:
 
     #Opens and reads the PDF File
-    pdffile = open('StormwaterandUtilityLocationIndexBookStreetIndexMobil.pdf', 'rb')
+    for filename in os.listdir("."):
+        if filename.endswith('.pdf'):
+            file = filename
+
+    pdffile = open(file, 'rb')
     readpdf = PyPDF2.PdfFileReader(pdffile)
+    print(file)
 
     #Gets the number of pages in the PDF
     numpages = readpdf.getNumPages()
@@ -32,6 +37,9 @@ if app.all_input_selected == True:
     Street = Street.replace("drive", "dr")
     Street = Street.replace("place", "pl")
     Street = Street.replace("circle", "cir")
+
+    def WordFixer(string):
+        string = string.replace('ave', 'av')
 
     HouseNumber = app.save_Number
     print(HouseNumber)
@@ -96,19 +104,20 @@ if app.all_input_selected == True:
             print(split_numbers[i])
 
         #cast all of the page numbers as ints
-        numbers = [int(val) + 3 for val in split_numbers]
+        numbers = [int(val) + 2 for val in split_numbers]
         print(numbers)
 
         for t in (numbers): #Searches the pages gotten from previous for loop for the address
             PageObjAddress = readpdf.getPage(t)
             AddressText = PageObjAddress.extractText()
             print(AddressText)
+            WordFixer(AddressText)
             AddressSearch = re.search(HouseNumber, AddressText, re.IGNORECASE)
             if(AddressSearch != None):
                 pagenum = (t) #Adding one because python counts from 0
                 page = 'page=' + str(pagenum)
 
-                path_to_pdf = os.path.abspath('.\StormwaterandUtilityLocationIndexBookStreetIndexMobil.pdf')
+                path_to_pdf = os.path.abspath(file)
 
                 path_to_acrobat = os.path.abspath('C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe') 
 
